@@ -1,0 +1,843 @@
+<html>
+<head>
+	<title>Initial D</title>
+
+	<style>
+		body{
+			margin: 0;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	 <div style="position: relative">
+                <p style="position: fixed; bottom: 0; width:100%; text-align: center"><font size = "5" color = 'blue' face = "Verdana"><b id="id01">TEXT YOU WANT</b></font>
+                </p>
+            </div>
+
+	<script src="js/three.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/loaders/DRACOLoader.js"></script>
+	<script src="js/loaders/GLTFLoader.js"></script>
+	<script src="js/controls/TransformControls.js"></script>
+
+	<script>
+var article1 ="China has agreed to reclassify fentanyl as a controlled substance, in what the White House is calling a wonderful humanitarian gesture after the much-anticipated talks Saturday between US President Donald Trump and Chinese President Xi Jinping in Buenos Aires, Argentina. In a statement, China's Foreign Ministry said China has decided to schedule the entire category of fentanyl-type substances as controlled substances, and start the process of revising relevant laws and regulations.China and the United States have agreed to take active measures to strengthen cooperation on law enforcement and narcotics control, including the control of fentanyl-type substances, it said. The new designation for the synthetic opioid drug means people in China who sell fentanyl to the US will be subject to China's maximum penalty under the law, according to a statement from the White House. Trump and Xi met Saturday for dinner on the sidelines of the G20 summit in Buenos Aires. Fentanyl's new designation is one result from their meeting. The US also agreed to maintain the 10% tariffs on $200 billion worth of Chinese goods, instead of raising them to 25%, the White House said. Fentanyl, an extremely powerful drug, is 50 to 100 times more potent than morphine and 30 to 50 times more potent than heroin. According to the US Centers for Disease Control and Prevention, 5,500 people died of synthetic opioid overdoses in 2014, most of them related to fentanyl. That's an 80% increase over the number of deaths reported in 2013. Last year, the Drug Enforcement Administration issued a national alert stating that drug incidents and overdoses related to fentanyl are occurring at an alarming rate. In 2013, the Drug Enforcement Administration made 942 fentanyl seizures; in 2014, it made 3,344. In August, Trump claimed on Twitter Chinese suppliers are fueling America's opioid crisis. It is outrageous that Poisonous Synthetic Heroin Fentanyl comes pouring into the U.S. Postal System from China. We can, and must, END THIS NOW! The Senate should pass the STOP ACT -- and firmly STOP this poison from killing our children and destroying our country. No more delay! the tweet said.";
+var text_field = document.getElementById("id01");
+text_field.innerHTML = "Loading...";
+var cam = 3;
+//var button = document.createElement("button");
+//button.innerHTML = "switch cam";
+//var body = document.getElementsByTagName("body")[0];
+//body.appendChild(button);
+//button.addEventListener("click", function(){
+//	cam = Math.abs(1-cam);
+//});
+  //  var window_width= $(window).width();
+    //var c = document.getElementById('ctx');
+    //ctx.width = window_width;
+   // c.width = screen.width;
+   // var ctx = c.getContext("2d");
+		var player = {
+     		spd: 0,
+			distance: 0,
+			turncount : 0,
+			count : 0,
+	}
+		var enemy = {
+			spd: 7,
+			distance: 0,
+			turncount : 0,
+			count : 0,
+		}
+		var direction = 0;
+		var separation = 300;
+		var audio = new Audio('bgm1.mp3');
+		var sound = new Audio('type.wav');
+		var renderer = new THREE.WebGLRenderer({antialias: true});
+		
+		//renderer.setClearColor(0x00ff00);
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+		var scene = new THREE.Scene();
+		scene.background = new THREE.Color(0xcce0ff);
+		scene.fog = new THREE.Fog(0xcce0ff, 1300, 10000);
+		//scene.background = new THREE.CubeTextureLoader()
+		//	.setPath( 'cube/Bridge2/' )
+		//	.load( [ 'negx.jpg', 'posx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
+		var camera = new THREE.PerspectiveCamera(65/*视角*/, window.innerWidth / window.innerHeight, 0.1, 100000);
+		
+		camera.position.set(1550,5000,1300);
+		camera.lookAt(new THREE.Vector3(0,0,0));
+		
+		//坐标轴
+		var axesHelper = new THREE.AxesHelper(500);//X-red, Y-green, Z-blue.
+		scene.add(axesHelper);
+		var controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.update();
+		var light = new THREE.AmbientLight(0xffffff, 0.5);
+		light.position.set(10000,20000,10000);
+		scene.add(light);
+		var light1 = new THREE.PointLight(0x000000, 0.5);
+		scene.add(light1);
+		/*var shadowlight = new THREE.SpotLight(0xffffff,0);
+		shadowlight.position.set(1000,6000,1000);
+		shadowlight.castShadow = true;
+		scene.add(shadowlight);*/
+		var dirlight = new THREE.DirectionalLight(0xffffff,1.05);
+		dirlight.position.set(1000,2000,1000);
+		dirlight.castShadow = true;
+		scene.add(dirlight);
+		var MAX_POINTS = 500;
+		var geometry = new THREE.CubeGeometry(100,150,100);
+		var geometry2 = new THREE.BoxBufferGeometry(100,300,100);
+		//geometry2.addAttribute('position', new THREE.BufferAttribute(positions,3));
+		var material = new THREE.MeshLambertMaterial({color: 0xFFFFFF, wireframe: false});
+		var mesh = new THREE.Mesh(geometry,material);
+		var mesh1 = new THREE.Mesh(geometry2,material);
+		var mesh2 = new THREE.Mesh(geometry,material);
+		var mesh3 = new THREE.Mesh(geometry, material);
+		mesh.position.set(0,75,-100);
+		mesh1.position.set(300,150,-300);
+		mesh2.position.set(-300,75,-300);
+		mesh3.position.set(150,75,200);
+		//moveable
+		
+		//scene.add(mesh);
+		//scene.add(mesh1);
+		//scene.add(mesh2);
+		//scene.add(mesh3);
+		//building
+		THREE.DRACOLoader.setDecoderPath( '/js/libs/draco' );
+		var loader = new THREE.GLTFLoader();
+		loader.setDRACOLoader(new THREE.DRACOLoader());
+		loader.load(
+			'models/cenario_urbano/scene.gltf',
+			function(gltf){
+				city = gltf.scene;
+				city.position.set(0,10,0);
+				city.scale.set(15,15,15);
+				//city.castShadow = true;
+				
+				scene.add(city);
+			},
+			function(xhr){
+				console.log((xhr.loaded/xhr.total *100)+'% loaded');
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		var temp = new THREE.Vector3;
+		var temp2 = new THREE.Vector3(Math.random()*1000,3000,Math.random()*1000);
+		var policegoal;
+		var policefp;
+		var thiefgoal;
+		loader.load(
+			'models/toyota_ae86/scene.gltf',
+			function(gltf){
+				police = gltf.scene;
+				police.position.set(-10,10,0);
+				police.scale.set(40,40,20);
+				//
+				policegoal = new THREE.Object3D;
+				police.add(policegoal);
+				policegoal.position.set(0,5,-30);
+				//
+				policefp = new THREE.Object3D;
+				policefpdir = new THREE.Object3D;
+				police.add(policefp);
+				police.add(policefpdir);
+				//policefp.position.set(-0.3,1,-0.3);
+				//policefpdir.position.set(-0.2,1,10);
+				policefp.position.set(-1.5,0.8,-3.5);
+				policefpdir.position.set(-1,1,-2);
+				//
+				scene.add(police);
+			},
+			function(xhr){
+				console.log((xhr.loaded/xhr.total *100)+'% loaded');
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		loader.load(
+			'models/mini_cooper_s/scene.gltf',
+			function(gltf){
+				thief = gltf.scene;
+				thief.position.set(-10,10,300);
+				thief.scale.set(-2,2,-1);
+				
+				thiefgoal = new THREE.Object3D;
+				thief.add(thiefgoal);
+				thiefgoal.position.set(0,100,500);
+				scene.add(thief);
+			},
+			function(xhr){
+				console.log((xhr.loaded/xhr.total *100)+'% loaded');
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+function distance_detection(person1, person2) {
+        // person1 player
+        // person2 enemy
+        if ((7600 + 1090 * Math.sqrt(2)  - separation - (person2.distance - person1.distance)) < 300) {
+                separation = 7600 + 1090 * Math.sqrt(2) - separation - (person2.distance - person1.distance);
+                person2.distance = 0;
+                person1.distance = 0;
+                if (person1.turncount != 0)
+                person1.turncount = - person1.turncount;
+            	if (person2.turncount != 0)
+                person2.turncount = - person2.turncount;
+                direction = 1 - direction;
+                person1.car.rotation.y += Math.PI;
+                if (person1.car.rotation.y >= Math.PI * 2)
+                person1.car.rotation.y -= 2 * Math.PI;
+         	     person2.car.rotation.y += Math.PI;
+                if (person2.car.rotation.y >= Math.PI * 2)
+                person2.car.rotation.y -= 2 * Math.PI;
+        }
+}
+function collision_detection(person1, person2) {
+        if (Math.abs(person1.car.position.x - person2.car.position.x) < 10)
+                if (Math.abs(person1.car.position.z - person2 .car.position. z )< 10) {
+                alert("Game over.");
+                player.car.position.x = -10;
+                player.car.position.z = 0;
+                person2.car.position.x = -10;
+                person2.car.position.z = 300;
+                person1.car.rotation.y = 0;
+                person2.car.rotation.y = 0;
+                person1.spd = 0;
+                person2.spd = person2.spd + 0.2;
+                player.distance = 0;
+                enemy.distance = 0;
+                separation = 300;
+                direction = 0;
+            }    
+}
+		
+document.onkeydown = function(event){
+       // audio.play();
+event.preventDefault();
+			audio.play();
+console.log(event.keyCode);
+ c = String.fromCharCode(event.keyCode);
+ if (event.shiftKey)  {    
+        if (event.keyCode == 49)
+                c = '!';
+        else if (event.keyCode == 50)
+                c = '@';
+        else if (event.keyCode == 51)
+                c = '#';
+        else if (event.keyCode == 52)
+                c = '$';
+        else if (event.keyCode == 53) 
+                c = '%';
+        else if (event.keyCode == 54)
+                c = '^';
+        else if (event.keyCode == 55)
+                c = '&';
+        else if (event.keyCode == 56)
+                c = '*';
+        else if (event.keyCode == 57)
+                c = '(';
+        else if (event.keyCode == 58)
+                c = ')';
+        else if (event.keyCode == 59)
+                c = '_';
+        else if (event.keyCode == 60)
+                c = '+';
+ }
+ else  {
+c = c.toLowerCase(c);
+}
+if (event.keyCode == 1186)
+c = ';';
+else if (event.keyCode == 188)
+c = ',';
+else if (event.keyCode == 189)
+c = '-';
+else if (event.keyCode == 190)
+c = '.';
+else if (event.keyCode == 191)
+c = '/';
+else if (event.keyCode == 222)
+c = '\'';
+else if(event.keyCode == 9){
+	if(cam == 3){
+		cam = 0;
+	}else if(cam == 0){
+		cam = 1;
+	}else if(cam == 1){
+		cam = 2;
+	}else if(cam == 2){
+		cam = 3;
+	}
+}
+//cam = Math.abs(1-cam);
+               
+if ( c === article1.charAt(player.count)) {
+	sound.play();
+player.spd = player.spd + 3  ;
+player.count = player.count + 1;
+}
+}
+		
+function updatePosition(someone, direction) {
+	if (direction == 0) {
+		if (someone.car.position.x == -10 && Math.abs(someone.car.rotation.y) < 1 ) {    //1st
+		if (someone.car.position.z < 0 && someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI / 40;
+			someone.turncount --;
+		}
+		someone.car.position.z += someone.spd;
+		if (someone.car.position.z >1050 ) {
+			someone.turncount += 10;
+			someone.car.position.x += (someone.car.position.z -1050)/
+			Math.sqrt(2);	
+			someone.car.position.z =1050 +  (someone.car.position.z - 1050)/
+			Math.sqrt(2);	
+		}
+		}
+		else if (Math.abs(someone.car.position.z - someone.car.position.x - 1060) < 0.01 ) {  // 2nd
+			someone.car.position.x += someone.spd/Math.sqrt(2);
+			someone.car.position.z += someone.spd/Math.sqrt(2);
+			if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+		    if (someone.car.position.x > 210) {
+		    	someone.turncount += 10;
+		    	someone.car.position.z = 1270;
+		    	someone.car.position.x = 210 + (someone.car.position.x - 210) 
+		    	* Math.sqrt(2);
+		    }
+		}
+		else if (someone.car.position.z == 1270) {  //3rd
+			someone.car.position.x += someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.x > 1420) {
+				someone.turncount += 10;
+				someone.car.position.z -=(someone.car.position.x - 1420) / 
+				Math.sqrt(2);
+				someone.car.position.x = 1420 + (someone.car.position.x - 1420)
+				/Math.sqrt(2);
+				
+			}
+		}
+		else if (Math.abs(someone.car.position.z + someone.car.position.x - 2690) < 0.01)
+				// 4th 
+			{
+				someone.car.position.x += someone.spd/Math.sqrt(2);
+				someone.car.position.z -= someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+				if (someone.car.position.z < 1160) {
+				someone.turncount += 10;
+		    	someone.car.position.x = 1530;
+		    	someone.car.position.z = 1160 -  (someone.car.position.z - 1160)  
+		    	* Math.sqrt(2);
+				}
+   			}
+			else if (someone.car.position.x == 1530) {  //5th
+			someone.car.position.z -= someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.z < 220) {
+				someone.turncount += 10;
+				someone.car.position.x -= (220 - someone.car.position.z) / 
+				Math.sqrt(2);
+				someone.car.position.z = 220 - (220 - someone.car.position.z)
+				/Math.sqrt(2);
+				
+			}
+		}
+			else if (Math.abs(someone.car.position.x - someone.car.position.z - 1310) < 0.01)
+				// 6th
+			{
+				someone.car.position.x -= someone.spd/Math.sqrt(2);
+				someone.car.position.z -= someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+				if (someone.car.position.x < 1315) {
+				someone.turncount += 10;
+		    	someone.car.position.z = 5;
+		    	someone.car.position.x = 1315 -  (1315 - someone.car.position.x)  
+		    	* Math.sqrt(2);
+				}
+   			}
+   			else if (someone.car.position.z == 5) {  //7th
+			someone.car.position.x -= someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.x < -915) {
+				someone.turncount += 10;
+				someone.car.position.z = 5 - (-915 - someone.car.position.x)
+				/Math.sqrt(2);
+				someone.car.position.x = -915- (-915 - someone.car.position.x) / 
+				Math.sqrt(2);
+			}
+			
+		}
+		else if (Math.abs(someone.car.position.z - someone.car.position.x - 920) < 0.01)
+				// 8th
+			{
+				someone.car.position.x -= someone.spd/Math.sqrt(2);
+				someone.car.position.z -= someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y -= Math.PI/40;
+				}
+				
+				if (someone.car.position.z < -200) {
+				someone.turncount += 10;
+		    	someone.car.position.x = -1120;
+		    	someone.car.position.z = -200 -  (-200 - someone.car.position.z)  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			else if (someone.car.position.x == -1120) {  //9th
+			someone.car.position.z -= someone.spd;
+			if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y -= Math.PI/40;
+				}
+			if (someone.car.position.z < -855) {
+				someone.turncount += 10;
+				someone.car.position.x += ( -855 - someone.car.position.z) / 
+				Math.sqrt(2);
+				someone.car.position.z = -855 - (-855 - someone.car.position.z)
+				/Math.sqrt(2);
+				
+			}
+			
+		} 
+		else if (Math.abs(someone.car.position.z + someone.car.position.x + 1975) < 0.01)
+				// 10th
+			{
+				someone.car.position.x += someone.spd/Math.sqrt(2);
+				someone.car.position.z -= someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y -= Math.PI/40;
+				}
+				
+				if (someone.car.position.x > -1005) {
+				someone.turncount += 10;
+		    	someone.car.position.z = -970;
+		    	someone.car.position.x = -1005 +  (someone.car.position.x + 1005 )  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			else if (someone.car.position.z == -970) {  //11th
+			someone.car.position.x += someone.spd;
+			if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y -= Math.PI/40;
+				}
+			if (someone.car.position.x > -235) {
+				someone.turncount += 10;
+				someone.car.position.z += (someone.car.position.x + 235) / 
+				Math.sqrt(2);
+				someone.car.position.x = -235 + (235 + someone.car.position.x)
+				/Math.sqrt(2);
+				
+			}
+			
+		} 
+		else if (Math.abs(someone.car.position.x - someone.car.position.z - 735) < 0.01)
+				// 12th
+			{
+				someone.car.position.x += someone.spd/Math.sqrt(2);
+				someone.car.position.z += someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y -= Math.PI/40;
+				}
+				
+				if (someone.car.position.z > -745) {
+				someone.turncount += 10;
+		    	someone.car.position.x = -10;
+		    	someone.car.position.z = -745 +  (someone.car.position.z + 745 )  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			
+   			
+		}  // end if direction = 0
+		else {   // if direction == 1
+		//	if (someone.car.position.x == -10 && Math.abs(someone.car.rotation.y -
+	//		Math.PI) < 0.1 ) {    //1st
+		if (someone.car.position.x == -10)  {
+		if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI / 40;
+			someone.turncount --;
+		}
+		someone.car.position.z -= someone.spd;
+		if (someone.car.position.z < -745 ) {
+			someone.turncount += 10;
+			someone.car.position.x -= (-745 - someone.car.position.z)/
+			Math.sqrt(2);	
+			someone.car.position.z =-745 -  (-745 - someone.car.position.z)/
+			Math.sqrt(2);	
+		}
+		}
+		else if (Math.abs(someone.car.position.z - someone.car.position.x - 1060) < 0.01 ) {  // 2nd
+			someone.car.position.x -= someone.spd/Math.sqrt(2);
+			someone.car.position.z -= someone.spd/Math.sqrt(2);
+			if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI/40;
+		    someone.turncount -= 1;
+		}
+		    if (someone.car.position.z < 1050) {
+		    	someone.turncount += 10;
+		    	someone.car.position.x = -10;
+		    	someone.car.position.z = 1050 - (1050 - someone.car.position.z) 
+		    	* Math.sqrt(2);
+		    }
+		}
+		else if (someone.car.position.z == 1270) {  //3rd
+			someone.car.position.x -= someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.x < 210) {
+				someone.turncount += 10;
+				someone.car.position.z = 1270 - (210 - someone.car.position.x) / 
+				Math.sqrt(2);
+				someone.car.position.x = 210 - (210 - someone.car.position.x)
+				/Math.sqrt(2);
+				
+			}
+		}
+		else if (Math.abs(someone.car.position.z + someone.car.position.x - 2690) < 0.01)
+				// 4th 
+			{
+				someone.car.position.x -= someone.spd/Math.sqrt(2);
+				someone.car.position.z += someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI/40;
+		    someone.turncount -= 1;
+		}
+				if (someone.car.position.x < 1420) {
+				someone.turncount += 10;
+		    	someone.car.position.z = 1270;
+		    	someone.car.position.x = 1420  -  (1420 - someone.car.position.x)  
+		    	* Math.sqrt(2);
+				}
+   			}
+			else if (someone.car.position.x == 1530) {  //5th
+			someone.car.position.z += someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.z > 1160) {
+				someone.turncount += 10;
+				someone.car.position.x = 1530 -(someone.car.position.z - 1160) / 
+				Math.sqrt(2);
+				someone.car.position.z = 1160 + (someone.car.position.z - 1160)
+				/Math.sqrt(2);
+				
+			}
+		}
+			else if (Math.abs(someone.car.position.x - someone.car.position.z - 1310) < 0.01)
+				// 6th
+			{
+				someone.car.position.x += someone.spd/Math.sqrt(2);
+				someone.car.position.z += someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+			someone.car.rotation.y -= Math.PI/40;
+		    someone.turncount -= 1;
+		}
+				if (someone.car.position.z >  220) {
+				someone.turncount += 10;
+		    	someone.car.position.x = 1530;
+		    	someone.car.position.z = 220  +  (someone.car.position.z - 220 )  
+		    	* Math.sqrt(2);
+				}
+   			}
+   			else if (someone.car.position.z == 5) {  //7th
+			someone.car.position.x += someone.spd;
+			if (someone.turncount > 0) {
+			someone.car.rotation.y += Math.PI/40;
+		    someone.turncount -= 1;
+		}
+			if (someone.car.position.x > 1315) {
+				someone.turncount += 10;
+				someone.car.position.z = 5 + (someone.car.position.x - 1315)
+				/Math.sqrt(2);
+				someone.car.position.x = 1315 + (someone.car.position.x - 1315) / 
+				Math.sqrt(2);
+			}
+			
+		}
+		else if (Math.abs(someone.car.position.z - someone.car.position.x - 920) < 0.01)
+				// 8th
+			{
+				someone.car.position.x += someone.spd/Math.sqrt(2);
+				someone.car.position.z += someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y += Math.PI/40;
+				}
+				
+				if (someone.car.position.x > -915) {
+				someone.turncount += 10;
+		    	someone.car.position.z = 5;
+		    	someone.car.position.x = -915 + (someone.car.position.x + 915)  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			else if (someone.car.position.x == -1120) {  //9th
+			someone.car.position.z += someone.spd;
+			if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y += Math.PI/40;
+				}
+			
+			if (someone.car.position.z > -200) {
+				someone.turncount += 10;
+				someone.car.position.x += ( someone.car.position.z + 200) / 
+				Math.sqrt(2);
+				someone.car.position.z = -200 + (someone.car.position.z + 200)
+				/Math.sqrt(2);
+				
+			}
+			
+		} 
+		else if (Math.abs(someone.car.position.z + someone.car.position.x + 1975) < 0.01)
+				// 10th
+			{
+				someone.car.position.x -= someone.spd/Math.sqrt(2);
+				someone.car.position.z += someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y += Math.PI/40;
+				}
+				
+				if (someone.car.position.z > -855) {
+				someone.turncount += 10;
+		    	someone.car.position.x = -1120;
+		    	someone.car.position.z = -855 +  (someone.car.position.z + 855 )  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			else if (someone.car.position.z == -970) {  //11th
+			someone.car.position.x -= someone.spd;
+			if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y += Math.PI/40;
+				}
+			if (someone.car.position.x < -1005) {
+				someone.turncount += 10;
+				someone.car.position.z += (-1005 - someone.car.position.x) / 
+				Math.sqrt(2);
+				someone.car.position.x = -1005 - (-1005 - someone.car.position.x)
+				/Math.sqrt(2);
+				
+			}
+			
+		} 
+		else if (Math.abs(someone.car.position.x - someone.car.position.z - 735) < 0.01)
+				// 12th
+			{
+				someone.car.position.x -= someone.spd/Math.sqrt(2);
+				someone.car.position.z -= someone.spd/Math.sqrt(2);
+				if (someone.turncount > 0) {
+					someone.turncount --;
+					someone.car.rotation.y += Math.PI/40;
+				}
+				
+				if (someone.car.position.x < -235) {
+				someone.turncount += 10;
+		    	someone.car.position.z = -970;
+		    	someone.car.position.x = -235 -  (-235 - someone.car.position.x)  
+		    	* Math.sqrt(2);
+				}
+				
+   			}
+   			
+   			
+		}
+	}
+	
+	function updatecloud(){
+		cloud.position.x -= 10;
+		cloud2.position.x -= 10;
+		cloud9.position.x -= 10;
+		if(cloud.position.x< -2000){
+			cloud.position.x = 2500;
+		}
+		if(cloud9.position.x< -3000){
+			cloud9.position.x = 2000;
+		}if(cloud2.position.x< -1500){
+			cloud2.position.x = 3000;
+		}
+	}
+		function update() {
+			text_field.innerHTML = article1.substring(player.count,player.count + 40);
+			updatePosition(player, direction);
+			updatePosition(enemy, direction);
+			updatecloud();
+ 			 if (player.car.rotation.y >= Math.PI * 2)
+              player.car.rotation.y -= 2 * Math.PI;
+              if (enemy.car.rotation.y >= Math.PI * 2)
+              enemy.car.rotation.y -= 2 * Math.PI;
+			player.distance += player.spd;
+			enemy.distance += enemy.spd;
+			distance_detection(player,enemy);
+			collision_detection(player,enemy);
+			player.spd = (player.spd -0.01) /1.05;
+			if (player.spd < 0)
+			player.spd = 0;
+		}
+		function start_game () {
+			player.car = police;
+			enemy.car = thief;
+				setInterval(update, 1000/60);
+			}
+		setTimeout(start_game, 3000);
+		loader.load(
+			'models/cloud/scene.gltf',
+			function(gltf){
+				cloud = gltf.scene;
+				cloud.position.set(2000,1500,300);
+				cloud.scale.set(100,150,100);
+				scene.add(cloud);
+				
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		loader.load(
+			'models/cloud/scene.gltf',
+			function(gltf){
+				cloud9 = gltf.scene;
+				cloud9.position.set(500,1500,1500);
+				cloud9.scale.set(80,80,100);
+				cloud9.castShadow = true;
+				scene.add(cloud9);		
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		loader.load(
+			'models/cloud/scene.gltf',
+			function(gltf){
+				cloud2 = gltf.scene;
+				cloud2.position.set(-300,1800,-300);
+				cloud2.scale.set(100,100,100);
+				scene.add(cloud2);
+				
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		loader.load(
+			'models/ground/scene.gltf',
+			function(gltf){
+				grass = gltf.scene;
+				grass.position.set(150,-60,0);
+				grass.scale.set(500,500,500);
+				//scene.add(grass);
+				
+			},
+			function(xhr){
+				console.log((xhr.loaded/xhr.total *100)+'% loaded');
+			},
+			function(error){
+				console.log('An error happened');
+			}
+		);
+		//floor
+		var textureloader = new THREE.TextureLoader();
+		var floortexture = textureloader.load('models/grasslight-big.jpg');
+		floortexture.wrapS = floortexture.wrapT = THREE.RepeatWrapping;
+		floortexture.repeat.set(25,25);
+		floortexture.anisotropy = 16;
+		var floorMat = new THREE.MeshLambertMaterial({
+			map: floortexture,
+			side: THREE.DoubleSide
+		})
+		
+		var Floor = new THREE.Mesh(
+			new THREE.PlaneGeometry(60000,60000),
+			floorMat);
+			//new THREE.MeshBasicMaterial({color:0x000000, wireframe:false})
+			//);
+		Floor.rotation.x += Math.PI/2;
+		Floor.receiveShadow = true;
+		scene.add(Floor);
+	
+		var dir = new THREE.Vector3;
+		//requestAnimationFrame(render);
+		render();
+		function render(){
+			requestAnimationFrame(render);
+			//scene.rotation.y += 0.005;
+			if(cam == 0){
+				scene.rotation.y = 0;
+				temp.setFromMatrixPosition(policegoal.matrixWorld);
+				camera.position.lerp(temp, 0.1);
+				camera.lookAt(police.position);
+				camera.fov = 65;
+				camera.updateProjectionMatrix();
+			}else if(cam == 2){
+				scene.rotation.y = 0;
+				temp.setFromMatrixPosition(thiefgoal.matrixWorld);
+				camera.position.lerp(temp, 0.1);
+				camera.lookAt(thief.position);
+				camera.fov = 65;
+				camera.updateProjectionMatrix();
+			}
+			else if(cam == 3){
+				camera.position.lerp(temp2, 0.05);
+				camera.lookAt(scene.position);
+				scene.rotation.y += 0.003;
+				camera.fov = 50;
+				camera.updateProjectionMatrix();
+				//controls.update();
+			}
+			else if(cam == 1){
+				scene.rotation.y = 0;
+				temp.setFromMatrixPosition(policefp.matrixWorld);
+				camera.position.x = temp.x;
+				camera.position.y = temp.y;
+				camera.position.z = temp.z;
+				dir.setFromMatrixPosition(policefpdir.matrixWorld);
+				camera.lookAt(dir);
+				camera.updateProjectionMatrix();
+			}
+			renderer.render(scene,camera);
+		}
+		//renderer.render(scene,camera);
+		//document.body.appendChild(renderer.domElement);
+	</script>
+</body>
+</html>

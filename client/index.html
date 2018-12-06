@@ -10,17 +10,31 @@
 		}
 
 	</style>
+<link rel="stylesheet" href="client/css/style.css"/>
 </head>
 <body>
-	<button onclick="ready()">Ready.</button>
 
-	 <div style="position: relative">
+
+	 <div id="signDiv" class="container">
+	<div class="main">
+	<h2>Catch Me If You Can
+	<form id="form_id" method="post" name="myform">
+	<label>Player Name :</label>
+	<input type="text" value="" name="username" id="username"/>
+	<input type="button" value="Ready" id="submit"/>
+	</h2>
+	</form>
+	</div>
+	</div>
+	 <div id="gameDiv" style="display:none;">
                 <p style="position: fixed; bottom: 0; width:100%; text-align: center"><font size = "5" color = 'red' face = "Verdana"><b id="id01">TEXT YOU WANT</b></font>
                 </p>
             </div>
 
+
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
+	<script src="client/js/login.js"></script>
 	<script src="client/js/three.js"></script>
 	<script src="client/js/OrbitControls.js"></script>
 	<script src="client/js/loaders/DRACOLoader.js"></script>
@@ -28,8 +42,72 @@
 	<script src="client/js/controls/TransformControls.js"></script>
 
 	<script>
+		//login
+		var login_submit = document.getElementById("submit");
+		login_submit.onclick = function() {
+			var login_username = document.getElementById("username").value;
 
+			console.log(login_username);
 
+			socket.emit('status_update',{name:login_username});
+
+			signDiv.style.display = 'none';
+			gameDiv.style= 'position : relative';
+			document.onkeydown = function(event){
+       // audio.play();
+				// event.preventDefault();
+							audio.play();
+				console.log(event.keyCode);
+				c = String.fromCharCode(event.keyCode);
+				if (event.shiftKey)  {    
+						if (event.keyCode == 49)
+								c = '!';
+						else if (event.keyCode == 50)
+								c = '@';
+						else if (event.keyCode == 51)
+								c = '#';
+						else if (event.keyCode == 52)
+								c = '$';
+						else if (event.keyCode == 53) 
+								c = '%';
+						else if (event.keyCode == 54)
+								c = '^';
+						else if (event.keyCode == 55)
+								c = '&';
+						else if (event.keyCode == 56)
+								c = '*';
+						else if (event.keyCode == 57)
+								c = '(';
+						else if (event.keyCode == 58)
+								c = ')';
+						else if (event.keyCode == 59)
+								c = '_';
+						else if (event.keyCode == 60)
+								c = '+';
+				}
+				else  {
+				c = c.toLowerCase(c);
+				}
+				if (event.keyCode == 1186)
+				c = ';';
+				else if (event.keyCode == 188)
+				c = ',';
+				else if (event.keyCode == 189)
+				c = '-';
+				else if (event.keyCode == 190)
+				c = '.';
+				else if (event.keyCode == 191)
+				c = '/';
+				else if (event.keyCode == 222)
+				c = '\'';
+							
+				if ( c === article1.charAt(player.count)) {
+					sound.play();
+				player.spd = player.spd + 3  ;
+				player.count = player.count + 1;
+				}
+				}
+		}
 
 	var socket = io();
 
@@ -76,7 +154,7 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 		var role = 1; // role = 1  -> player == police 
 					  // role = 0  -> player == thief 
 		var isPlaying = 0;
-
+		var interval = null;
 
 		var renderer = new THREE.WebGLRenderer({antialias: true});
 		
@@ -122,21 +200,14 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 
 		//geometry2.addAttribute('position', new THREE.BufferAttribute(positions,3));
 
-		var material = new THREE.MeshLambertMaterial({color: 0xFFFFFF, wireframe: false});
-		var mesh = new THREE.Mesh(geometry,material);
-		var mesh1 = new THREE.Mesh(geometry2,material);
-		var mesh2 = new THREE.Mesh(geometry,material);
-		var mesh3 = new THREE.Mesh(geometry, material);
-		mesh.position.set(0,75,-100);
-		mesh1.position.set(300,150,-300);
-		mesh2.position.set(-300,75,-300);
-		mesh3.position.set(150,75,200);
-
 		
 
 		THREE.DRACOLoader.setDecoderPath( 'client/js/libs/draco' );
 		var loader = new THREE.GLTFLoader();
 		loader.setDRACOLoader(new THREE.DRACOLoader());
+
+		var policecam;
+		var thiefcam;
 
 		loader.load(
 			'client/models/cenario_urbano/scene.gltf',
@@ -849,7 +920,7 @@ function updatePosition(someone, direction) {
 			player.car = thief;
 			enemy.car = police;
 		}
-				setInterval(update, 1000/60);
+				interval = setInterval(update, 1000/60);
 			}
 
 
@@ -858,19 +929,16 @@ function updatePosition(someone, direction) {
 	    countdown.play();
 	*/
 
-		function ready() {
-			socket.emit('status_update');
-		}
+
 
 		socket.on('start',function(data){
 		        // when two players are ready, start the game
-		        if (!isPlaying && (role == 0 || role == 1)   )
-		        {
+		     
 		        	isPlaying = 1;
 					role = data.role;
-					setTimeout(start_game, 5000);
-	    			countdown.play();
-	    		}
+					setTimeout(start_game, 5000)
+					countdown.play();
+
 		});
 
 			socket.on('toclient',function(data){
@@ -941,6 +1009,8 @@ function updatePosition(someone, direction) {
 				socket.on('dc',function() {
 					initialize();
 					alert("Your opponent has disconnected.");
+					text_field.innerHTML = "Waiting for another player...";
+					clearInterval(interval);
 				});
 
 

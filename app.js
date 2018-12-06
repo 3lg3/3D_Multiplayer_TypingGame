@@ -8,8 +8,9 @@ var thief_ready = 0;
 var thief_in = 0;
 var police_ready = 0;
 var police_in = 0;
-var game_in_progress = 0;
 var dc = 0;
+
+	var flag = 0;
 
 console.log('Server started.');
 
@@ -18,7 +19,7 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
-serv.listen(8000);
+serv.listen(3000);
 
 var SOCKET_LIST = {};
 
@@ -29,6 +30,7 @@ var police = {
 			z : 0,
 			turncount: 0,
 			distance: 0,
+			name: null
 	}
 
 var thief = {
@@ -37,6 +39,7 @@ var thief = {
 			z : 300,
 			turncount: 0,
 			distance: 0,
+			name: null
 	}
 
 var separation = 300;
@@ -148,9 +151,11 @@ io.sockets.on('connection', function(socket) {
 				thief.distance = data.distance;
 			});
 
-		socket.on('status_update', function(){
+		socket.on('status_update', function(data){
 				
 				thief_ready = 1;
+				thief.name = data.name;
+				console.log("thief name: ",data.name);
 			});
 
 			}
@@ -164,9 +169,11 @@ io.sockets.on('connection', function(socket) {
 				police.distance = data.distance;
 			});
 
-			socket.on('status_update', function(){
+			socket.on('status_update', function(data){
 				
 				police_ready = 1;
+				police.name = data.name;
+				console.log("police name: ",data.name);
 			});
 
 			}  // end else 
@@ -174,20 +181,19 @@ io.sockets.on('connection', function(socket) {
 	socket.on('disconnect', function(){
 
 if (socket.role == 0 ) {
+			flag = 0;
 			number_of_players --;
-			    if (thief_ready)
-				game_in_progress -= 1;
 			thief_ready = 0;
 			thief_in = 0;
-		
+			console.log('thief disconnected.');		
+			
 		}
 		else if (socket.role == 1 ) {
+			flag = 0;
 			number_of_players --;
-				if (police_ready)
-				game_in_progress -= 1;
-			police_ready = 0;
-			police_in = 0;
-		
+					police_ready = 0;
+			police_in = 0; 
+			console.log('police disconnected.');		
 		}
 		
 		delete SOCKET_LIST[socket.id];
@@ -214,21 +220,21 @@ if (socket.role == 0 ) {
 
 
 setInterval ( function() {
-
+	
 		for (var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
 		if (socket.role == 0)  // thief
 		{	
-			if (thief_ready && police_ready && game_in_progress != 2) {
-				game_in_progress = 1;
+			if (thief_ready && police_ready && flag != 2) {
 				socket.emit('start',{role: 0});
+				flag += 1;
 			}
 			socket.emit('toclient',police);
 		}
 		else if (socket.role == 1) // police 
 		{	
-			if (thief_ready && police_ready && game_in_progress != 2) {
-				game_in_progress = 2;
+			if (thief_ready && police_ready && flag != 2) {
+				flag += 1;
 				socket.emit('start',{role: 1});
 			}
 			socket.emit('toclient',thief);
@@ -237,11 +243,17 @@ setInterval ( function() {
 	}	
 
 
-	if (game_in_progress == 2) {
+	
 	collision_detection(police,thief);
 	distance_detection(police,thief);
-}
+
 
 
 },1000/60);
+
+
+
+setInterval ( function() {
+	console.log('number of players: ', number_of_players);
+},1000);
 

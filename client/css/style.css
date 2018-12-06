@@ -11,20 +11,24 @@ h2{
     border-top: 1px solid #ccc;
     margin-bottom: 40px;
     }
-    div.container{
-    width: 900px;
-    height: 610px;
+    /* div.container{
+    width: 100%;
+    height: 100%;
     margin:35px auto;
     font-family: 'Raleway', sans-serif;
-    }
+    } */
     div.main{
+    position: absolute;
+    top: 50%;   
+    left: 50%;
+    margin-top: -150px;
+    margin-left: -150px;
     width: 300px;
+    height: 200px;
     padding: 10px 50px 25px;
     border: 2px solid gray;
     border-radius: 10px;
     font-family: raleway;
-    float:left;
-    margin-top:50px;
     }
     input[type=text],input[type=password]{
     width: 100%;
@@ -64,7 +68,7 @@ h2{
     font-size: 16px;
     background: linear-gradient(#ffbc00 5%, #ffdd7f 100%);
     border: 1px solid #e5a900;
-    color: #4E4D4B;
+    color: red;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
