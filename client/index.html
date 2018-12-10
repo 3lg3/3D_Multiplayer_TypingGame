@@ -15,19 +15,48 @@
 <body>
 
 
-	 <div id="signDiv" class="container">
+	 <div id="signDiv" class="container" style="">
 	<div class="main">
-	<h2>Catch Me If You Can
+	<h2> Police and Thief
 	<form id="form_id" method="post" name="myform">
-	<label>Player Name :</label>
+	<label id='input_1'>Enter Your Name:</label>
 	<input type="text" value="" name="username" id="username"/>
-	<input type="button" value="Ready" id="submit"/>
+	<input type="button" value="Ready" id="submit" style=""/>
+	<label>Instruction:</label>
+	<label>Run the car by typing the bottom text.</label>
+	<label>Press "Tab" to change the perspective.</label>
+	<label>Role will be randomly assigned.</label> <br>
+	<p><label>Author:</label> </p>
+	<p><label>Qihang Xu</label></p>
+	<p><label>Tianyi Yang</label></p>
+	<p><label>Zhaoze Zhang</label></p>
 	</h2>
 	</form>
 	</div>
 	</div>
+
+
+	 <div id="resultDiv" class="container" style="display:none;">
+	<div class="main2">
+	<h5 id="message1"> 
+		Hello
+	</h5>
+	<h5>top scores:</h5>
+	<p id='queryscore'></p>
+	</div>
+	</div>
+
 	 <div id="gameDiv" style="display:none;">
                 <p style="position: fixed; bottom: 0; width:100%; text-align: center"><font size = "5" color = 'red' face = "Verdana"><b id="id01">TEXT YOU WANT</b></font>
+                </p>
+                <p style="position: absolute; top: 10%; left:0%;">
+                	<font size = "5" color = #FFDF00 face = "Verdana"><b id='pname'>Player Name: </b></font>
+                </p>
+              <p style="position: absolute; top: 10%; left:0%;     margin-top: 50px;">
+                	<font size = "5" color = 'red' face = "Verdana"><b id='prole'>Role: pending </b></font>
+                </p>
+                <p style="position: absolute; top: 10%; left:0%;     margin-top: 100px;">
+                	<font size = "5" color = 'red' face = "Verdana"><b id='pdistance'>Distance: 15 m </b></font>
                 </p>
             </div>
 
@@ -44,86 +73,51 @@
 	<script>
 		//login
 		var login_submit = document.getElementById("submit");
+		
 		login_submit.onclick = function() {
 			var login_username = document.getElementById("username").value;
 
+			name_field.innerHTML = "Player Name: " + login_username;
 			console.log(login_username);
 
 			socket.emit('status_update',{name:login_username});
 
 			signDiv.style.display = 'none';
 			gameDiv.style= 'position : relative';
-			document.onkeydown = function(event){
-       // audio.play();
-				// event.preventDefault();
-							audio.play();
-				console.log(event.keyCode);
-				c = String.fromCharCode(event.keyCode);
-				if (event.shiftKey)  {    
-						if (event.keyCode == 49)
-								c = '!';
-						else if (event.keyCode == 50)
-								c = '@';
-						else if (event.keyCode == 51)
-								c = '#';
-						else if (event.keyCode == 52)
-								c = '$';
-						else if (event.keyCode == 53) 
-								c = '%';
-						else if (event.keyCode == 54)
-								c = '^';
-						else if (event.keyCode == 55)
-								c = '&';
-						else if (event.keyCode == 56)
-								c = '*';
-						else if (event.keyCode == 57)
-								c = '(';
-						else if (event.keyCode == 58)
-								c = ')';
-						else if (event.keyCode == 59)
-								c = '_';
-						else if (event.keyCode == 60)
-								c = '+';
-				}
-				else  {
-				c = c.toLowerCase(c);
-				}
-				if (event.keyCode == 1186)
-				c = ';';
-				else if (event.keyCode == 188)
-				c = ',';
-				else if (event.keyCode == 189)
-				c = '-';
-				else if (event.keyCode == 190)
-				c = '.';
-				else if (event.keyCode == 191)
-				c = '/';
-				else if (event.keyCode == 222)
-				c = '\'';
-							
-				if ( c === article1.charAt(player.count)) {
-					sound.play();
-				player.spd = player.spd + 3  ;
-				player.count = player.count + 1;
-				}
-				}
+		//	display:none;
 		}
+
+
+
 
 	var socket = io();
 
 var article1 ="China has agreed to reclassify fentanyl as a controlled substance, in what the White House is calling a wonderful humanitarian gesture after the much-anticipated talks Saturday between US President Donald Trump and Chinese President Xi Jinping in Buenos Aires, Argentina. In a statement, China's Foreign Ministry said China has decided to schedule the entire category of fentanyl-type substances as controlled substances, and start the process of revising relevant laws and regulations.China and the United States have agreed to take active measures to strengthen cooperation on law enforcement and narcotics control, including the control of fentanyl-type substances, it said. The new designation for the synthetic opioid drug means people in China who sell fentanyl to the US will be subject to China's maximum penalty under the law, according to a statement from the White House. Trump and Xi met Saturday for dinner on the sidelines of the G20 summit in Buenos Aires. Fentanyl's new designation is one result from their meeting. The US also agreed to maintain the 10% tariffs on $200 billion worth of Chinese goods, instead of raising them to 25%, the White House said. Fentanyl, an extremely powerful drug, is 50 to 100 times more potent than morphine and 30 to 50 times more potent than heroin. According to the US Centers for Disease Control and Prevention, 5,500 people died of synthetic opioid overdoses in 2014, most of them related to fentanyl. That's an 80% increase over the number of deaths reported in 2013. Last year, the Drug Enforcement Administration issued a national alert stating that drug incidents and overdoses related to fentanyl are occurring at an alarming rate. In 2013, the Drug Enforcement Administration made 942 fentanyl seizures; in 2014, it made 3,344. In August, Trump claimed on Twitter Chinese suppliers are fueling America's opioid crisis. It is outrageous that Poisonous Synthetic Heroin Fentanyl comes pouring into the U.S. Postal System from China. We can, and must, END THIS NOW! The Senate should pass the STOP ACT -- and firmly STOP this poison from killing our children and destroying our country. No more delay! the tweet said.";
 
+//var article1 = "chinanumberone!";
+var article1_length = article1.length;
+
+
+ 
+var result_field = document.getElementById("message1");
+var query_field = document.getElementById("queryscore");
+
 
 var text_field = document.getElementById("id01");
 text_field.innerHTML = "Waiting for both player to get ready...";
 
-
+var name_field = document.getElementById("pname");
+var role_field = document.getElementById("prole");
+var distance_field = document.getElementById("pdistance");
+var input_1 = document.getElementById("input_1");
 
 		var player = {
      		spd: 0,
 			distance: 0,
 			turncount : 0,
 			count : 0,
+			start: null,
+			end: null,
 
 	}
 
@@ -156,6 +150,19 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 		var isPlaying = 0;
 		var interval = null;
 
+		var result_keypress = 0;
+
+
+		var signal = 2;  // spectator signal 
+
+
+		var temp_time = null;
+		var temp_player_count = 0;
+
+		var cam = 2;
+		var camp = new THREE.Vector3;
+		var oricam = new THREE.Vector3(Math.random()*1000,3000,Math.random()*1000);
+
 		var renderer = new THREE.WebGLRenderer({antialias: true});
 		
 	
@@ -168,15 +175,12 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 		scene.background = new THREE.Color(0xcce0ff);
 	
 
-		var camera = new THREE.PerspectiveCamera(35/*视角*/, window.innerWidth / window.innerHeight, 0.1, 100000);
+		var camera = new THREE.PerspectiveCamera(65/*视角*/, window.innerWidth / window.innerHeight, 0.1, 100000);
 		
 		camera.position.set(1550,5000,1300);
 		camera.lookAt(new THREE.Vector3(0,0,0));
-		
-		//坐标轴
-		var axesHelper = new THREE.AxesHelper(500);//X-red, Y-green, Z-blue.
-		scene.add(axesHelper);
-
+	
+	
 		var controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.update();
 
@@ -234,6 +238,11 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 
 				police.position.set(-10,10,0);
 				police.scale.set(40,40,20);
+
+
+				policecam = new THREE.Object3D;
+				police.add(policecam);
+				policecam.position.set(0,5,-30);
 				
 				scene.add(police);
 			},
@@ -252,6 +261,9 @@ text_field.innerHTML = "Waiting for both player to get ready...";
 				thief.position.set(-10,10,300);
 				thief.scale.set(-2,2,-1);
 				
+				thiefcam = new THREE.Object3D;
+				thief.add(thiefcam);
+				thiefcam.position.set(0,100,500);
 				scene.add(thief);
 			},
 			function(xhr){
@@ -328,58 +340,14 @@ loader.load(
 		Floor.receiveShadow = true;
 		scene.add(Floor);
 	
+    
 
-
-
-function distance_detection(police, thief) {
-      
-
-        if ((7600 + 1090 * Math.sqrt(2)  - separation - (thief.distance - police.distance)) < 300) {
-                separation = 7600 + 1090 * Math.sqrt(2) - separation - (thief.distance - police.distance);
-                thief.distance = 0;
-                police.distance = 0;
-                if (police.turncount != 0)
-                police.turncount = - police.turncount;
-            	if (thief.turncount != 0)
-                thief.turncount = - thief.turncount;
-                direction = 1 - direction;
-                police.car.rotation.y += Math.PI;
-                if (police.car.rotation.y >= Math.PI * 2)
-                police.car.rotation.y -= 2 * Math.PI;
-         	     thief.car.rotation.y += Math.PI;
-                if (thief.car.rotation.y >= Math.PI * 2)
-                thief.car.rotation.y -= 2 * Math.PI;
-
-        }
-
-}
-
-/*
-
-function collision_detection(person1, person2) {
-        if (Math.abs(person1.car.position.x - person2.car.position.x) < 10)
-                if (Math.abs(person1.car.position.z - person2 .car.position. z )< 10) {
-                alert("Game over.");
-                player.car.position.x = -10;
-                player.car.position.z = 0;
-                person2.car.position.x = -10;
-                person2.car.position.z = 300;
-                person1.car.rotation.y = 0;
-                person2.car.rotation.y = 0;
-                play.spd = 0;
-                person1.turncount = 0;
-                player.distance = 0;
-                enemy.distance = 0;
-                separation = 300;
-                direction = 0;
-            }    
-}
-*/
+		
 		
 document.onkeydown = function(event){
 
 			audio.play();
-
+result_keypress += 1;
 console.log(event.keyCode);
  c = String.fromCharCode(event.keyCode);
  if (event.shiftKey)  {    
@@ -424,6 +392,18 @@ else if (event.keyCode == 191)
 c = '/';
 else if (event.keyCode == 222)
 c = '\'';
+else if (event.keyCode == 9) {				
+	 event.preventDefault();
+	if(cam == 2){
+		if(role == 1){
+			cam = 0;
+		}else if(role == 0){
+			cam = 1;
+		}
+	}else{
+		cam = 2;
+	}
+}
                
 
 
@@ -432,17 +412,22 @@ if ( c === article1.charAt(player.count)) {
 player.spd = player.spd + 3  ;
 player.count = player.count + 1;
 }
+
 }
+
 
 
 
 		
 function updatePosition(someone, direction) {
+
+
+
 	if (direction == 0) {
 
 		if (someone.car.position.x == -10 && Math.abs(someone.car.rotation.y) < 1 ) {    //1st
 
-		if (someone.car.position.z < 0 && someone.turncount > 0) {
+		if (someone.car.position.z < 0 && someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI / 40;
 			someone.turncount --;
 		}
@@ -459,7 +444,7 @@ function updatePosition(someone, direction) {
 		else if (Math.abs(someone.car.position.z - someone.car.position.x - 1060) < 0.01 ) {  // 2nd
 			someone.car.position.x += someone.spd/Math.sqrt(2);
 			someone.car.position.z += someone.spd/Math.sqrt(2);
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -473,7 +458,7 @@ function updatePosition(someone, direction) {
 		}
 		else if (someone.car.position.z == 1270) {  //3rd
 			someone.car.position.x += someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -492,7 +477,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x += someone.spd/Math.sqrt(2);
 				someone.car.position.z -= someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -506,7 +491,7 @@ function updatePosition(someone, direction) {
    			}
 			else if (someone.car.position.x == 1530) {  //5th
 			someone.car.position.z -= someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -524,7 +509,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x -= someone.spd/Math.sqrt(2);
 				someone.car.position.z -= someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -539,7 +524,7 @@ function updatePosition(someone, direction) {
 
    			else if (someone.car.position.z == 5) {  //7th
 			someone.car.position.x -= someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -557,7 +542,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x -= someone.spd/Math.sqrt(2);
 				someone.car.position.z -= someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y -= Math.PI/40;
 				}
@@ -573,7 +558,7 @@ function updatePosition(someone, direction) {
 
    			else if (someone.car.position.x == -1120) {  //9th
 			someone.car.position.z -= someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y -= Math.PI/40;
 				}
@@ -593,7 +578,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x += someone.spd/Math.sqrt(2);
 				someone.car.position.z -= someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y -= Math.PI/40;
 				}
@@ -608,7 +593,7 @@ function updatePosition(someone, direction) {
    			}
    			else if (someone.car.position.z == -970) {  //11th
 			someone.car.position.x += someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y -= Math.PI/40;
 				}
@@ -627,7 +612,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x += someone.spd/Math.sqrt(2);
 				someone.car.position.z += someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y -= Math.PI/40;
 				}
@@ -652,7 +637,7 @@ function updatePosition(someone, direction) {
 		else {   
 
 		if (someone.car.position.x == -10)  {
-		if (someone.turncount > 0) {
+		if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI / 40;
 			someone.turncount --;
 		}
@@ -671,7 +656,7 @@ function updatePosition(someone, direction) {
 		else if (Math.abs(someone.car.position.z - someone.car.position.x - 1060) < 0.01 ) {  // 2nd
 			someone.car.position.x -= someone.spd/Math.sqrt(2);
 			someone.car.position.z -= someone.spd/Math.sqrt(2);
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -685,7 +670,7 @@ function updatePosition(someone, direction) {
 		}
 		else if (someone.car.position.z == 1270) {  //3rd
 			someone.car.position.x -= someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -704,7 +689,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x -= someone.spd/Math.sqrt(2);
 				someone.car.position.z += someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -718,7 +703,7 @@ function updatePosition(someone, direction) {
    			}
 			else if (someone.car.position.x == 1530) {  //5th
 			someone.car.position.z += someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -736,7 +721,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x += someone.spd/Math.sqrt(2);
 				someone.car.position.z += someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y -= Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -751,7 +736,7 @@ function updatePosition(someone, direction) {
 
    			else if (someone.car.position.z == 5) {  //7th
 			someone.car.position.x += someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 			someone.car.rotation.y += Math.PI/40;
 		    someone.turncount -= 1;
 		}
@@ -769,7 +754,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x += someone.spd/Math.sqrt(2);
 				someone.car.position.z += someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y += Math.PI/40;
 				}
@@ -785,7 +770,7 @@ function updatePosition(someone, direction) {
 
    			else if (someone.car.position.x == -1120) {  //9th
 			someone.car.position.z += someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y += Math.PI/40;
 				}
@@ -805,7 +790,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x -= someone.spd/Math.sqrt(2);
 				someone.car.position.z += someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y += Math.PI/40;
 				}
@@ -820,7 +805,7 @@ function updatePosition(someone, direction) {
    			}
    			else if (someone.car.position.z == -970) {  //11th
 			someone.car.position.x -= someone.spd;
-			if (someone.turncount > 0) {
+			if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y += Math.PI/40;
 				}
@@ -841,7 +826,7 @@ function updatePosition(someone, direction) {
 			{
 				someone.car.position.x -= someone.spd/Math.sqrt(2);
 				someone.car.position.z -= someone.spd/Math.sqrt(2);
-				if (someone.turncount > 0) {
+				if (someone.turncount > 0 && someone.spd > 0) {
 					someone.turncount --;
 					someone.car.rotation.y += Math.PI/40;
 				}
@@ -881,12 +866,24 @@ function updatePosition(someone, direction) {
 
 
 		function update() {
+				if (player.count == article1_length) {
+		socket.emit('eof');
+		temp_player_count = player.count;
+		//player.count = 0;
 
+	}
 			text_field.innerHTML = article1.substring(player.count,player.count + 40);
 			enemy.car.position.x = temp.x;
 			enemy.car.position.z = temp.z;
 			enemy.car.rotation.y = temp.y;
 			enemy.distance = temp.distance;
+			if (role == 0) 
+			distance_field.innerHTML = 'Distance: ' + Math.floor((separation + player.distance - 
+				enemy.distance)/20) + ' m';
+			else 
+	distance_field.innerHTML = 'Distance: ' + Math.floor((separation + enemy.distance - 
+				player.distance)/20) + ' m';
+
 		socket.emit('toserver',{x:player.car.position.x, y:player.car.rotation.y,
 		 z:player.car.position.z, distance: player.distance});
 			updatePosition(player, direction);
@@ -920,6 +917,7 @@ function updatePosition(someone, direction) {
 			player.car = thief;
 			enemy.car = police;
 		}
+				player.start = new Date().getTime();
 				interval = setInterval(update, 1000/60);
 			}
 
@@ -933,9 +931,18 @@ function updatePosition(someone, direction) {
 
 		socket.on('start',function(data){
 		        // when two players are ready, start the game
-		     
+		     		
 		        	isPlaying = 1;
 					role = data.role;
+					if (role == 0) 
+					role_field.innerHTML = "Role: Thief";
+					else
+					role_field.innerHTML = "Role: Police";
+					if(role == 1){
+						cam = 0;
+					}else if(role == 0){
+						cam = 1;
+					}
 					setTimeout(start_game, 5000)
 					countdown.play();
 
@@ -946,6 +953,24 @@ function updatePosition(someone, direction) {
 				temp.x = data.x;
 				temp.z = data.z;
 				temp.y = data.y;
+			});
+
+			socket.on('spectator',function(data) {
+
+				signal = data.signal;
+				submit.style= 'display:none;';
+			
+				if (signal == 0) {
+					input_1.innerHTML = 'Server Message: ';
+					document.getElementById("username").value =
+					"Game in session. Wait..";
+
+				}
+				else if (signal == 1) {
+					input_1.innerHTML ='Server Message: ';
+					document.getElementById("username").value = 
+					'Game joinable. Refresh to join ASAP!';
+				}
 			});
 
 
@@ -983,10 +1008,42 @@ function updatePosition(someone, direction) {
 			});
 
 
-			socket.on('collide',function() {
+			socket.on('end_of_game',function(data) {
+				temp_player_count = player.count;
+				temp_time = player.start;
+							initialize();
+								player.end = new Date().getTime();
 					if (role == 0) {
 					player.car.position.z = 300;
-					alert("Game over. You are caught!");
+
+					if ((player.end - temp_time) > 100) {
+					resultDiv.style = "";
+					if (data.type == 0)
+						//result_field   query_field
+					result_field.innerHTML = 
+					"Game over. You are caught! \nScore: " + 
+					Math.floor(temp_player_count * 100000/(player.end - temp_time));
+					else
+					result_field.innerHTML = 
+					"Escaped. You won! \nScore:  " + 
+					Math.floor(temp_player_count * 100000/(player.end - temp_time));
+
+					result_field.innerHTML += "\nclosing in 1 sec.";
+					setTimeout(function(){ 
+					resultDiv.style = "display:none;";
+					}, 1000);
+
+			
+
+				}
+					/*
+					if (data.type == 0)
+					alert("Game over. You are caught! Your score is: " + 
+						Math.floor(temp_player_count * 100000/(player.end - temp_time)));
+					else 
+						alert("Wow! You ran away from the police! Your score is: " + 
+						Math.floor(temp_player_count * 100000/(player.end - temp_time)));
+						*/
 
 				}
 
@@ -994,14 +1051,42 @@ function updatePosition(someone, direction) {
 				else {
 					player.car.position.z = 0;
 
-					alert("Game over. You've caught the thief!");
-				}
+					if ((player.end - temp_time) > 100) {
+					resultDiv.style = "";
+					if (data.type == 0)
+						//result_field   query_field
+					result_field.innerHTML = 
+					"You've caught the thief! \nScore: " + 
+					Math.floor(temp_player_count * 100000/(player.end - temp_time));
+					else
+					result_field.innerHTML = 
+					"Opps. you failed to catch the thief. \nScore:  " + 
+					Math.floor(temp_player_count * 100000/(player.end - temp_time));
+					result_field.innerHTML += "\nclosing in 1 sec.";
+					setTimeout(function(){ 
+						resultDiv.style = "display:none;";
+					}, 1000);
 
-			initialize();
+
+				}
+					/*
+					if (data.type == 0)
+					alert("Congratulations!! You've caught the thief! Your score is: " + 
+						Math.floor(temp_player_count * 100000/(player.end - temp_time)));
+					else 
+					alert("Oops, you failed to catch the thief.Your score is: " + 
+						Math.floor(temp_player_count * 100000/(player.end - temp_time)));
+						*/
+				}
+				console.log("time taken: ",player.end - temp_time);
+				if ((player.end - temp_time) > 100)
+				 socket.emit('score',{score: Math.floor(temp_player_count * 100000/(player.end - temp_time))});
                 socket.emit('toserver',{x:player.car.position.x, y:player.car.rotation.y,
 		 z:player.car.position.z, distance: player.distance});
 
+
 			});
+
 
 
 
@@ -1014,9 +1099,17 @@ function updatePosition(someone, direction) {
 				});
 
 
+				socket.on('leaderboard',function(rows){
+					query_field.innerHTML = "";
+					for (var i=0; i<rows.length; i++)
+					query_field.innerHTML += 
+				rows[i].name + ' ' + rows[i].score + '<br>';
+				});
+
 	
 
 	function initialize() {
+		player.start =  new Date().getTime();
 		if (role == 0)  // thief
 		{
 		player.car.position.x = -10;
@@ -1048,10 +1141,35 @@ else {  // player == police
 		direction = 0;
 	}
 
-		requestAnimationFrame(render);
+		render();
 		function render(){
 			requestAnimationFrame(render);
-			controls.update();
+
+			if(cam == 0){
+				scene.rotation.y = 0;
+				camp.setFromMatrixPosition(policecam.matrixWorld);
+				camera.position.lerp(camp, 0.1);
+				camera.lookAt(police.position);
+				camera.fov = 65;
+				camera.updateProjectionMatrix();
+			}else if(cam == 1){
+				scene.rotation.y = 0;
+				camp.setFromMatrixPosition(thiefcam.matrixWorld);
+				camera.position.lerp(camp, 0.1);
+				camera.lookAt(thief.position);
+				camera.fov = 65;
+				camera.updateProjectionMatrix();
+			}
+			else if(cam == 2){
+				camera.position.lerp(oricam, 0.05);
+				camera.lookAt(scene.position);
+				scene.rotation.y += 0.003;
+				camera.fov = 50;
+				camera.updateProjectionMatrix();
+				//controls.update();
+			}
+
+			
 			renderer.render(scene,camera);
 		}
 

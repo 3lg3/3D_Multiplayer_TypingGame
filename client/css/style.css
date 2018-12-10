@@ -30,6 +30,7 @@ h2{
     border-radius: 10px;
     font-family: raleway;
     }
+
     input[type=text],input[type=password]{
     width: 100%;
     height: 40px;
@@ -78,4 +79,19 @@ h2{
     }
     input[type=button]:hover{
     background: linear-gradient(#ffdd7f 5%, #ffbc00 100%);
+    }
+
+     div.main2{
+    position: absolute;
+    top: 20%;   
+    left: 50%;
+    margin-top: -150px;
+    margin-left: -150px;
+    width: 300px;
+    height: 500px;
+    padding: 10px 50px 25px;
+    border: 2px solid gray;
+    border-radius: 10px;
+    font-family: raleway;
+    background: white;
     }

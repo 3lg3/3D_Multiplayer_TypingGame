@@ -1,4 +1,16 @@
 
+var mysql = require('mysql');
+
+var pool =mysql.createPool({
+    connectionLimit : 10, // default = 10
+  	host: "localhost",
+  	user: "root",
+  	password: "password",
+    database: "game"
+});
+
+
+
 
 var express = require('express');
 var app = express();
@@ -12,6 +24,9 @@ var dc = 0;
 
 	var flag = 0;
 
+
+   var eof = 0;
+
 console.log('Server started.');
 
 app.get('/',function(req, res) {
@@ -19,7 +34,7 @@ app.get('/',function(req, res) {
 });
 app.use('/client',express.static(__dirname + '/client'));
 
-serv.listen(3000);
+serv.listen(80);
 
 var SOCKET_LIST = {};
 
@@ -30,7 +45,7 @@ var police = {
 			z : 0,
 			turncount: 0,
 			distance: 0,
-			name: null
+			name: null,
 	}
 
 var thief = {
@@ -39,10 +54,17 @@ var thief = {
 			z : 300,
 			turncount: 0,
 			distance: 0,
-			name: null
+			name: null,
 	}
 
 var separation = 300;
+
+/*
+setInterval ( function() {
+	
+},1000);
+*/
+
 
 function initialize() {
 	police.x = -10;
@@ -56,13 +78,14 @@ function initialize() {
 	thief.turncount = 0;
 	thief.distance = 0;
 	separation = 300;
+	eof = 0;
 }
 
 
-function collision_detection(police, thief) {
-        if (Math.abs(police.x - thief.x) < 10)
+function end_of_game_detection(police, thief) {
+        if (Math.abs(police.x - thief.x) < 10)   
                 if (Math.abs(police.z - thief.z )< 10) {
-              //  alert("Game over.");
+
                 police.x = -10;
                 police.z = 0;
                 thief.x = -10;
@@ -77,11 +100,22 @@ for (var i in SOCKET_LIST) {
 		var socket = SOCKET_LIST[i];
 		if (socket.role < 2)  
 		{	
-			socket.emit('collide');
+			socket.emit('end_of_game',{type: 0});
 		}
 		}
 
             }    
+            if (eof == 1)  {
+            	initialize();
+            	for (var i in SOCKET_LIST) {
+		var socket = SOCKET_LIST[i];
+		if (socket.role < 2)  
+		{	
+			socket.emit('end_of_game',{type: 1});
+		}
+		}
+            	
+            }
 }
 
 
@@ -124,6 +158,7 @@ if ((7600 + 1090 * Math.sqrt(2)  - separation - (thief.distance - police.distanc
 var io = require('socket.io')(serv, {});
 io.sockets.on('connection', function(socket) {
 
+
 	socket.id = Math.random();
 	socket.distance = 0;
 	if (thief_in == 0) {
@@ -138,12 +173,20 @@ io.sockets.on('connection', function(socket) {
 	}
 	else {
 		socket.role = 2; // spectator 
+		number_of_players ++ ;
 	}
 	
 	SOCKET_LIST[socket.id] = socket;
 
          if (socket.role == 0)  // thief
 		{
+
+
+			socket.on('eof', function(){
+					eof = 1;
+			});
+
+
 			socket.on('toserver', function(data){
 				thief.x = data.x;
 				thief.y = data.y;
@@ -158,10 +201,56 @@ io.sockets.on('connection', function(socket) {
 				console.log("thief name: ",data.name);
 			});
 
+		socket.on('score', function(data){
+
+
+// mysql
+if (  data.score != null) {
+
+					console.log(thief.name,": ",data.score);
+
+				pool.getConnection(function(err, connection) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = "INSERT INTO leaderboard (name, score) VALUES ('"+ thief.name+ 
+  "', '"+ data.score + "')";
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("1 record inserted");
+          	connection.release();
+  });
+});
+
+
+
+				pool.getConnection(function(err, connection) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = " SELECT * FROM leaderboard order by score desc limit 10";
+  connection.query(sql, function (err, rows) {
+    if (err) throw err;
+    console.log("1 record retrieved");
+       		console.log(rows);
+          	connection.release();
+          	socket.emit('leaderboard',rows);
+  });
+});
+
+
+}
+
+			});
+
 			}
 
 			else if (socket.role == 1)  // police
 		{
+
+
+				socket.on('eof', function(){
+					eof = 1;
+
+			});
 			socket.on('toserver', function(data){
 				police.x = data.x;
 				police.y = data.y;
@@ -176,21 +265,66 @@ io.sockets.on('connection', function(socket) {
 				console.log("police name: ",data.name);
 			});
 
-			}  // end else 
+			socket.on('score', function(data){
 
+
+
+if (  data.score != null) {
+
+				console.log(police.name,": ",data.score);
+
+				pool.getConnection(function(err,connection) {
+  if (err) throw err;
+  console.log("Connected!");
+
+    var sql = "INSERT INTO leaderboard (name, score) VALUES ('"+ police.name+ 
+  "', '"+ data.score + "')";
+
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("1 record inserted");
+      	connection.release();
+  });
+});
+
+
+
+				pool.getConnection(function(err, connection) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = " SELECT * FROM leaderboard order by score desc limit 10";
+  connection.query(sql, function (err, rows) {
+    if (err) throw err;
+    console.log("1 record retrieved");
+
+          	connection.release();
+          	socket.emit('leaderboard',rows);
+  });
+});
+
+}
+
+
+			});
+
+			}  // end else 
+			else {   //spectator 
+
+			}
 	socket.on('disconnect', function(){
+			number_of_players --;
 
 if (socket.role == 0 ) {
+			eof = 0;
 			flag = 0;
-			number_of_players --;
 			thief_ready = 0;
 			thief_in = 0;
 			console.log('thief disconnected.');		
 			
 		}
 		else if (socket.role == 1 ) {
+			eof = 0;
 			flag = 0;
-			number_of_players --;
 					police_ready = 0;
 			police_in = 0; 
 			console.log('police disconnected.');		
@@ -207,6 +341,8 @@ if (socket.role == 0 ) {
 			     initialize();
 
 			}
+
+
 
 		}
 		
@@ -240,20 +376,24 @@ setInterval ( function() {
 			socket.emit('toclient',thief);
 		}
 
+		else{ //spectator message
+
+			if (thief_in && police_in )
+			socket.emit('spectator',{signal: 0});
+		else
+			socket.emit('spectator',{signal : 1})
+		}
+
 	}	
 
 
 	
-	collision_detection(police,thief);
+	end_of_game_detection(police,thief);
 	distance_detection(police,thief);
-
-
+	//console.log('number of connections: ', number_of_players);
 
 },1000/60);
 
 
 
-setInterval ( function() {
-	console.log('number of players: ', number_of_players);
-},1000);
 
